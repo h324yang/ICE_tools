@@ -1,0 +1,10 @@
+ICE/*
+!ICE/.keep
+
+pretrain/*
+!pretrain/.keep
+
+data/*
+!data/.keep
+
+sensi_test/*

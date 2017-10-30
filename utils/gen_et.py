@@ -1,10 +1,17 @@
 import json
-import sys
+import argparse
 from nltk.corpus import stopwords
 import re
 from sklearn.feature_extraction.text import TfidfVectorizer
 from scipy.sparse import dok_matrix
 import operator
+from tqdm import tqdm
+from gensim.models.keyedvectors import KeyedVectors
+
+
+def read_w2v_from_gensim(path):
+    model = KeyedVectors.load_word2vec_format(path, binary=True)
+    return model.wv
 
 def load_json(fjson):
     return json.load(open(fjson))
@@ -20,7 +27,7 @@ def preprocess(plot):
 def dict_processor(dict_data, func):
     return {k:preprocess(v) for k, v in dict_data.items()}
 
-def get_tfidf_edgelist(dict_data, topM, binary=False):
+def gen_tfidf_edgelist(dict_data, topM, weighted=False, filter_dict=None):
     edgelist = ""
     corpus = []
     tf = TfidfVectorizer(analyzer='word', ngram_range=(1,1), min_df=0, stop_words='english')
@@ -30,24 +37,49 @@ def get_tfidf_edgelist(dict_data, topM, binary=False):
     tfidf_matrix = tf.fit_transform(corpus)
     feature_names = tf.get_feature_names()
     dok_tfidf_matrix = dok_matrix(tfidf_matrix)
-    for j, doc in enumerate(dok_tfidf_matrix):
-        print(j)
+    for j in tqdm(range(dok_tfidf_matrix.shape[0])):
+        doc = dok_tfidf_matrix[j]
         value_sorted = sorted(doc.items(), key=operator.itemgetter(1), reverse=True)
-        for i in range(min(len(value_sorted), topM)):
-            if binary:
-                edgelist += "m_%s w_%s 1\n"%(sorted_keys[j], str(feature_names[value_sorted[i][0][1]]))
+        quota = topM
+        cache = ""
+        for value in value_sorted:
+            if weighted:
+                word_weight = str(value[1])
             else:
-                edgelist += "m_%s w_%s %s\n"%(sorted_keys[j], str(feature_names[value_sorted[i][0][1]]), str(value_sorted[i][1]))
+                word_weight = "1"
+
+            has_word = None
+            if filter_dict is None or str(feature_names[value[0][1]]) in filter_dict:
+                quota -= 1
+                has_word = str(feature_names[value[0][1]])
+
+            if has_word is not None:
+                cache += "m_%s w_%s %s\n"%(sorted_keys[j], has_word, word_weight)
+
+            if quota <= 0:
+                break
+        edgelist += cache
     return edgelist
 
-if __name__ == "__main__":
-    json_path = sys.argv[1]
-    out_path = sys.argv[2]
-    topM = int(sys.argv[3])
-    binary = bool(sys.argv[4])
-    dataset = load_json(json_path)
+def get_args():
+    PARSER = argparse.ArgumentParser(description='Transform OMDB dataset to edge list file.')
+    PARSER.add_argument('-omdb', default=None, help='Entity-Text edgelist File Name')
+    PARSER.add_argument('-save', default=None, help='Et graph File Name')
+    PARSER.add_argument('-topM', default=None, type=int, help='Top M tfidf words are conneceted')
+    PARSER.add_argument('-weighted', default=None, type=int, help='0:unweighted / 1:weighted')
+    PARSER.add_argument('-w2v_filter', default=None, help='Path: filter vocabs with pretrain mode')
+    CONFIG = PARSER.parse_args()
+    return CONFIG.omdb, CONFIG.save, int(CONFIG.topM), bool(CONFIG.weighted), CONFIG.w2v_filter
+
+def main():
+    omdb, save, topM, weighted, w2v_filter = get_args()
+    dataset = load_json(omdb)
     parsed_plot = dict_processor(extract_plot(dataset), preprocess)
-    edgelist = get_tfidf_edgelist(parsed_plot, topM, binary)
-    with open(out_path, "w") as f:
+    wv = read_w2v_from_gensim(w2v_filter)
+    edgelist = gen_tfidf_edgelist(parsed_plot, topM, weighted, wv)
+    with open(save, "w") as f:
         f.write(edgelist)
 
+
+if __name__ == "__main__":
+    main()
