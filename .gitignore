@@ -8,3 +8,6 @@ data/*
 !data/.keep
 
 sensi_test/*
+
+reproduce/*
+!reproduce/.keep

@@ -1,2 +1,2 @@
 # preprocessICE
-The code for preprocessing ICE experiment with respect to OMDB dataset. 
+The code for preprocessing and evaluating ICE experiment with respect to OMDB dataset. 
