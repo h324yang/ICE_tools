@@ -66,20 +66,35 @@
 
 
 ###############################################################
-# reproducing SIGIR result
+# reproduce SIGIR result
 ###############################################################
-mkdir reproduce
+# mkdir reproduce
+# REPK=20
+# EXPK=5
+# WEIGHTED=0
+# SAVE_PATH="data/"
+# for i in `seq 1 5`;
+# do
+    # ./ICE/ICE/ice -text $SAVE_PATH"ice_tt_top"$REPK"x"$EXPK"_w"$WEIGHTED".edge" -entity $SAVE_PATH"ice_et_top"$REPK"x"$EXPK"_w"$WEIGHTED".edge" -textrep reproduce/word${i}.embd -save reproduce/item${i}.embd -textcontext reproduce/context${i}.embd -dim 300 -sample 200 -neg 2 -alpha 0.025 -thread 20 
+# done
+
+
+###############################################################
+# evaluate reproduced retrieval task
+###############################################################
 REPK=20
 EXPK=5
 WEIGHTED=0
 SAVE_PATH="data/"
 for i in `seq 1 5`;
 do
-    ./ICE/ICE/ice -text $SAVE_PATH"ice_tt_top"$REPK"x"$EXPK"_w"$WEIGHTED".edge" -entity $SAVE_PATH"ice_et_top"$REPK"x"$EXPK"_w"$WEIGHTED".edge" -textrep reproduce/word${i}.embd -save reproduce/item${i}.embd -textcontext reproduce/context${i}.embd -dim 300 -sample 200 -neg 2 -alpha 0.025 -thread 20 
+    echo "Evaluating top"$REPK"x"$EXPK"_w"$WEIGHTED": Round"${i}
+    python3 metric/retrieval_eval.py -text reproduce/word${i}.embd -entity reproduce/item${i}.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json
 done
 
+
 ###############################################################
-# doing sensitivity analysis
+# sensitivity analysis
 ###############################################################
 # mkdir sensi_test
 # for i in `seq 1 3`
@@ -93,7 +108,4 @@ done
     # done
 # done
 
-###############################################################
-# evaluating retrieval task
-###############################################################
 

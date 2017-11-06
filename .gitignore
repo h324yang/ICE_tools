@@ -5,6 +5,7 @@ data/*
 !data/.keep
 
 sensi_test/*
+!sensi_test/.keep
 
 reproduce/*
 !reproduce/.keep
