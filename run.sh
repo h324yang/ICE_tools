@@ -1,20 +1,23 @@
 ###############################################################
-# generate pseudo embedding model for filtering
+# Generate pseudo embedding model for filtering
 ###############################################################
 # python3 preprocess/gen_pseudo_embd.py pretrain/GoogleNews-vectors-negative300.bin pretrain/pseudo_pretrain.txt
 
+
 ###############################################################
-# generate tfidf json
+# Generate tfidf json
 ###############################################################
 # python3 preprocess/gen_tfidf_json.py -omdb OMDB_dataset/OMDB.json -save data/omdb_keyword_tfidf.json -topM 20 -weighted 1 -w2v_filter pretrain/pseudo_pretrain.txt 
 
+
 ###############################################################
-# generate partial embedding
+# Generate partial embedding
 ###############################################################
 # python3 preprocess/gen_partial_embd.py pretrain/GoogleNews-vectors-negative300.bin data/omdb_keyword_tfidf.json pretrain/partial_embd.txt
 
+
 ###############################################################
-# gen et/tt graphs
+# Generate et/tt graphs
 ###############################################################
 # echo "Start generating ET and TT relation edge lists..."
 # INFO_PATH="data/omdb_keyword_tfidf.json"
@@ -42,8 +45,9 @@
 # done
 # echo "Finished generating ET and TT relation edge lists."
 
+
 ###############################################################
-# construct ICE network
+# Construct ICE network
 ###############################################################
 # SAVE_PATH="data/"
 # for REPK in 5 10 15 20
@@ -66,7 +70,7 @@
 
 
 ###############################################################
-# reproduce SIGIR result
+# Reproduce SIGIR result
 ###############################################################
 # mkdir reproduce
 # REPK=20
@@ -80,7 +84,7 @@
 
 
 ###############################################################
-# evaluate reproduced retrieval task
+# Evaluate reproduced retrieval task
 ###############################################################
 REPK=20
 EXPK=5
@@ -94,7 +98,7 @@ done
 
 
 ###############################################################
-# sensitivity analysis
+# Sensitivity analysis
 ###############################################################
 # mkdir sensi_test
 # for i in `seq 1 3`
