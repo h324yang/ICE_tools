@@ -7,20 +7,20 @@
 ###############################################################
 # Generate tfidf json
 ###############################################################
-# python3 preprocess/gen_tfidf_json.py -omdb OMDB_dataset/OMDB.json -save data/omdb_keyword_tfidf.json -topM 20 -weighted 1 -w2v_filter pretrain/pseudo_pretrain.txt 
+# python3 preprocess/gen_tfidf_json.py -omdb OMDB_dataset/OMDB.json -save OMDB_dataset/omdb_keyword_tfidf.json -topM 20 -weighted 1 -w2v_filter pretrain/pseudo_pretrain.txt 
 
 
 ###############################################################
 # Generate partial embedding
 ###############################################################
-# python3 preprocess/gen_partial_embd.py pretrain/GoogleNews-vectors-negative300.bin data/omdb_keyword_tfidf.json pretrain/partial_embd.txt
+# python3 preprocess/gen_partial_embd.py pretrain/GoogleNews-vectors-negative300.bin OMDB_dataset/omdb_keyword_tfidf.json pretrain/partial_embd.txt
 
 
 ###############################################################
 # Generate et/tt graphs
 ###############################################################
 # echo "Start generating ET and TT relation edge lists..."
-# INFO_PATH="data/omdb_keyword_tfidf.json"
+# INFO_PATH="OMDB_dataset/omdb_keyword_tfidf.json"
 # EMBD_PATH="pretrain/partial_embd.txt"
 # SAVE_PATH="data/"
 
