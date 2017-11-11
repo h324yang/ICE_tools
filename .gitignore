@@ -4,8 +4,12 @@ pretrain/*
 data/*
 !data/.keep
 
-sensi_test/*
-!sensi_test/.keep
-
 reproduce/*
 !reproduce/.keep
+
+sample_sensi/*
+!sample_sensi/.keep
+
+sample_sensi_tester/*
+
+metric/__pycache__/*

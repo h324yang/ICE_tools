@@ -85,7 +85,9 @@ def genre_precision(genre, id2genres, retrieved):
     hit = 0.
     for i in range(x):
         for j in range(y):
+            # print(retrieved[i][j], id2genres[retrieved[i][j][2:]])
             if genre in id2genres[retrieved[i][j][2:]]:
+                # print("This is %s movie."%genre)
                 hit += 1.
     return hit / float(x*y)
 
