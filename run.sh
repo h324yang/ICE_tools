@@ -50,13 +50,13 @@
 # Construct ICE network
 ###############################################################
 # SAVE_PATH="data/"
-# for REPK in 5 10 15 20
+# for REPK in 20
 # do
-    # for WEIGHTED in 0 1
+    # for WEIGHTED in 0
     # do
         # ET_PATH=$SAVE_PATH"et_top"$REPK"_w"$WEIGHTED".edge"
 
-        # for EXPK in 3 5
+        # for EXPK in 10 
         # do
             # TT_PATH=$SAVE_PATH"tt_top"$REPK"x"$EXPK"_w"$WEIGHTED".edge"
             # ICE_FULL_PATH=$SAVE_PATH"ice_full_top"$REPK"x"$EXPK"_w"$WEIGHTED".edge"
@@ -74,7 +74,7 @@
 ###############################################################
 # mkdir reproduce
 # REPK=20
-# EXPK=5
+# EXPK=10
 # WEIGHTED=0
 # SAVE_PATH="data/"
 # for i in `seq 1 5`;
@@ -86,30 +86,25 @@
 ###############################################################
 # Evaluate reproduced retrieval task
 ###############################################################
-REPK=20
-EXPK=5
-WEIGHTED=0
-SAVE_PATH="data/"
-for i in `seq 1 5`;
-do
-    echo "Evaluating top"$REPK"x"$EXPK"_w"$WEIGHTED": Round"${i}
-    python3 metric/retrieval_eval.py -text reproduce/word${i}.embd -entity reproduce/item${i}.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json
-done
+# REPK=20
+# EXPK=5
+# WEIGHTED=0
+# SAVE_PATH="data/"
+# for i in `seq 1 5`;
+# do
+    # echo "Evaluating top"$REPK"x"$EXPK"_w"$WEIGHTED": Round"${i}
+    # python3 metric/retrieval_eval.py -text reproduce/word${i}.embd -entity reproduce/item${i}.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json
+# done
 
 
 ###############################################################
 # Sensitivity analysis
 ###############################################################
-# mkdir sensi_test
-# for i in `seq 1 3`
-# do
-    # for dim in 64 128 300 
-    # do
-        # for samp in 50 100 200 300
-        # do
-            # ./ICE/ICE/ice -text data/omdb_ice_tt.txt -entity data/omdb_ice_et.txt -textrep sensi_test/dim${dim}_samp${samp}_word${i}.embd -textcontext sensi_test/context.embd -save sensi_test/dim${dim}_samp${samp}_item${i}.embd -dim ${dim} -sample ${samp} -neg 2 -alpha 0.025 -thread 20 
-        # done
-    # done
-# done
+DIR="sample_sensi/"
+mkdir $DIR
+for _ in 1 
+do
+    ./ICE/ICE/ice -text data/ice_full_top20x10_w0.edge -textrep ${DIR}full.embd -textcontext ${DIR}context.embd -dim 300 -sample 100 -save_times 10 -neg 5 -alpha 0.025 -thread 26 
+done
 
 

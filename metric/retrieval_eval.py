@@ -25,10 +25,10 @@ def get_args():
     return CONFIG.entity, CONFIG.text, CONFIG.omdb, CONFIG.seeds
 
 
-def read_w2v_from_file(path, prefix=""):
+def read_w2v_from_file(path, prefix="", skip_header=False):
     w2v_dict = {}
     with open(path, "r") as f:
-        next(f) # assume the first line is header
+        if skip_header: next(f) # assume the first line is header
         for line in f:
             splited = line.strip().split()
             word = prefix+splited[0]
