@@ -13,3 +13,9 @@ sample_sensi/*
 sample_sensi_tester/*
 
 metric/__pycache__/*
+
+visualize/log/*
+!visualize/log/.keep
+
+backup/*
+

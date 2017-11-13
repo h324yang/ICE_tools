@@ -42,7 +42,7 @@ class Monitor():
                         cur_word_p = self.DIR + cur_word_p
                         cur_item_p = self.DIR + cur_item_p
                         print("Splitting %s"%f)
-                        sleep(120) # wait, in case the file is still being written
+                        sleep(5) # wait, in case the file is still being written
                         self.split(cur_file_p, cur_word_p, cur_item_p)
                         self.splitted.append(f)
                         print("All splitted files: ", self.splitted)
@@ -76,6 +76,7 @@ class Monitor():
             f.write(word_out)
         with open(item_p, "w") as f:
             f.write(item_out)
+        remove(file_p)
 
     def run(self, sec=30, keep=None):
         self.sec = sec
@@ -112,6 +113,6 @@ class Monitor():
 if __name__ == "__main__":
     DIR, item_p, word_p, context_p, split_p, data_p, seed_p = get_args()
     monitor = Monitor(DIR, item_p, word_p, context_p, split_p, data_p, seed_p)
-    monitor.run(sec=5, keep=[str(i*10000) for i in range(1, 8)])
+    monitor.run(sec=10, keep=[str(i*100) for i in range(1, 10, 2)])
 
 

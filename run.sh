@@ -104,7 +104,7 @@ DIR="sample_sensi/"
 mkdir $DIR
 for _ in 1 
 do
-    ./ICE/ICE/ice -text data/ice_full_top20x10_w0.edge -textrep ${DIR}full.embd -textcontext ${DIR}context.embd -dim 300 -sample 100 -save_times 10 -neg 5 -alpha 0.025 -thread 26 
+    ./ICE/ICE/ice -text data/ice_full_top20x10_w0.edge -textrep ${DIR}full.embd -textcontext ${DIR}context.embd -dim 300 -sample 1000 -save_times 20 -neg 5 -alpha 0.025 -thread 26 
 done
 
 
