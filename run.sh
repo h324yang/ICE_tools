@@ -23,23 +23,24 @@
 # INFO_PATH="OMDB_dataset/omdb_keyword_tfidf.json"
 # EMBD_PATH="pretrain/partial_embd.txt"
 # SAVE_PATH="data/"
+# GEN_LIB="gen_ice_network/UPLOAD_ice_network"
 
-# for REPK in 5 10 15 20
+# for REPK in 20
 # do
-    # for WEIGHTED in 0 1
+    # for WEIGHTED in 0 
     # do
         # for MAX_REPK in 20
         # do
             # ET_PATH=$SAVE_PATH"et_top"$REPK"_w"$WEIGHTED".edge"
             # echo "Generating "$ET_PATH
-            # python3 ice_relation_generator/1_gen_relation/gen_et.py -load_info $INFO_PATH -load_embd $EMBD_PATH -repk $REPK -max_repk $MAX_REPK -save_et $ET_PATH -weighted $WEIGHTED
+            # python3 $GEN_LIB/gen_et.py -info $INFO_PATH -embd $EMBD_PATH -repk $REPK -max_repk $MAX_REPK -et $ET_PATH -w $WEIGHTED
         # done
 
-        # for EXPK in 3 5
+        # for EXPK in 10
         # do
             # TT_PATH=$SAVE_PATH"tt_top"$REPK"x"$EXPK"_w"$WEIGHTED".edge"
             # echo "Generating "$TT_PATH
-            # python3 ice_relation_generator/1_gen_relation/gen_tt.py -load_embd $EMBD_PATH -load_et $ET_PATH -expk $EXPK -save_tt $TT_PATH -weighted $WEIGHTED
+            # python3 $GEN_LIB/gen_tt.py -embd $EMBD_PATH -et $ET_PATH -expk $EXPK -tt $TT_PATH -w $WEIGHTED
         # done
     # done
 # done
@@ -98,13 +99,30 @@
 
 
 ###############################################################
-# Sensitivity analysis
+# Continuous sensitivity analysis
 ###############################################################
-DIR="sample_sensi/"
-mkdir $DIR
-for _ in 1 
-do
-    ./ICE/ICE/ice -text data/ice_full_top20x10_w0.edge -textrep ${DIR}full.embd -textcontext ${DIR}context.embd -dim 300 -sample 1000 -save_times 20 -neg 5 -alpha 0.025 -thread 26 
-done
+# DIR="sample_sensi/"
+# SAMP=6000
+# TIMES=20
+# mkdir $DIR
+# for i in 1 
+# do
+    # ./ICE-manually_set_save_size/ICE/ice -text data/ice_full_top20x10_w0.edge -textrep ${DIR}full.embd -textcontext ${DIR}context.embd -dim 300 -sample $SAMP -save_times $TIMES -neg 5 -alpha 0.025 -thread 26 
+    # python3 metric/retrieval_folder.py -dir $DIR -text word.embd -entity item.embd -split full.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/sample_sensi_log_20x10_6k.txt 
+# done
 
+
+###############################################################
+# Separate sensitivity analysis
+###############################################################
+for i in 1 2 3
+do
+    CUR_DIR=sample_sensi_${i}/
+    mkdir $CUR_DIR
+    for SAMP in 2 4 8 16 32 64 128 256 512 1024 1500 2000 2500 3000 3500 4000 4500 5000
+    do
+        ./ICE/ICE/ice -text data/ice_full_top20x10_w0.edge -textrep ${CUR_DIR}full.embd.${SAMP} -textcontext ${CUR_DIR}context.embd.${SAMP} -dim 300 -sample $SAMP -neg 5 -alpha 0.025 -thread 26 
+        python3 metric/retrieval_folder.py -dir $CUR_DIR -text word.embd -entity item.embd -split full.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/sample_sensi_log_20x10_5k_sep_${i}.txt 
+    done
+done
 

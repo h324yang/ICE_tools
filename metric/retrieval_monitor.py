@@ -29,10 +29,10 @@ class Monitor():
         self.split_p = split_p
         self.splitted = []
 
-    def check(self, split_p=None):
+    def check(self, split_p=None, wait=5):
         self.collector = defaultdict(int)
-        files = listdir(self.DIR)
         if split_p:
+            files = listdir(self.DIR)
             for f in files:
                 if split_p in f and f not in self.splitted:
                     cur_word_p = f.replace(split_p, "word.embd")
@@ -42,7 +42,7 @@ class Monitor():
                         cur_word_p = self.DIR + cur_word_p
                         cur_item_p = self.DIR + cur_item_p
                         print("Splitting %s"%f)
-                        sleep(5) # wait, in case the file is still being written
+                        sleep(wait) # wait, in case the file is still being written
                         self.split(cur_file_p, cur_word_p, cur_item_p)
                         self.splitted.append(f)
                         print("All splitted files: ", self.splitted)

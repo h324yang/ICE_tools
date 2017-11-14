@@ -27,7 +27,7 @@ def read_log(log_p, final=None):
         for line in f:
             if line.startswith("Evaluating"):
                 iter_trained = line.strip().split()[-2]
-                if iter_trained == 'final': iter_trained = final
+                if final and iter_trained == 'final': iter_trained = final
             if line.startswith("Precision@"):
                 cur_topk = line.strip().split("@")[-1][:-1]
             genre, prec = genre_check(line, genres)
