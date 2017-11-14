@@ -122,7 +122,7 @@ do
     for SAMP in 2 4 8 16 32 64 128 256 512 1024 1500 2000 2500 3000 3500 4000 4500 5000
     do
         ./ICE/ICE/ice -text data/ice_full_top20x10_w0.edge -textrep ${CUR_DIR}full.embd.${SAMP} -textcontext ${CUR_DIR}context.embd.${SAMP} -dim 300 -sample $SAMP -neg 5 -alpha 0.025 -thread 26 
-        python3 metric/retrieval_folder.py -dir $CUR_DIR -text word.embd -entity item.embd -split full.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/sample_sensi_log_20x10_5k_sep_${i}.txt 
     done
+    python3 metric/retrieval_folder.py -dir $CUR_DIR -text word.embd -entity item.embd -split full.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/sample_sensi_log_20x10_5k_sep_${i}.txt 
 done
 
