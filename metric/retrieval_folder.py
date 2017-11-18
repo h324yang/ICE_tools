@@ -11,7 +11,7 @@ def get_args():
     PARSER.add_argument('-split', default=None, help='Path of embeddings being splited')
     PARSER.add_argument('-omdb', default=None, help='OMDB dataset')
     PARSER.add_argument('-seeds', default=None, help='Seed words of genres')
-    parser.add_argument("-header", type=int, choices=[0,1], default=0, help="(Default: 0) header of embdding files (doesn't exist:0 / exists:1).")
+    PARSER.add_argument("-header", type=int, choices=[0,1], default=0, help="(Default: 0) header of embdding files (doesn't exist:0 / exists:1).")
     CONFIG = PARSER.parse_args()
     return CONFIG.dir, CONFIG.entity, CONFIG.text, CONFIG.split, CONFIG.omdb, CONFIG.seeds, bool(CONFIG.header)
 
