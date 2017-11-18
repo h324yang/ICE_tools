@@ -20,3 +20,4 @@ visualize/log/*
 backup/*
 
 task/*
+!task/.keep
