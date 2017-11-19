@@ -102,9 +102,9 @@
 ###############################################################
 # Retrieval Task
 ###############################################################
-mkdir task/
-DIR=task/retrieval/
-mkdir $DIR
+# mkdir task/
+# DIR=task/retrieval/
+# mkdir $DIR
 
 # # baseline1: BPT
 # if [ -f "data/et_top20_w0_bidir.edge" ]
@@ -127,7 +127,14 @@ mkdir $DIR
 # done
 
 # # baseline2: AVGEMB
-CUR_DIR=${DIR}avgemb/
-mkdir ${CUR_DIR}
-python3 AVGEMB/avgemb.py -entity ${CUR_DIR}item.embd -text ${CUR_DIR}word.embd -et data/et_top20_w0.edge -w2v pretrain/partial_embd.txt
+# CUR_DIR=${DIR}avgemb/
+# mkdir ${CUR_DIR}
+# python3 AVGEMB/avgemb.py -entity ${CUR_DIR}item.embd -text ${CUR_DIR}word.embd -et data/et_top20_w0.edge -w2v pretrain/partial_embd.txt
+# python3 metric/retrieval_folder.py -dir $CUR_DIR -text word.embd -entity item.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/avgemb_log_20x10_2k_${i}.txt
+
+# # baseline3: KBR
+
+
+
+
 
