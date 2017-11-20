@@ -51,13 +51,13 @@
 # Construct ICE network
 ###############################################################
 # SAVE_PATH="data/"
-# for REPK in 20
+# for REPK in 20 10
 # do
     # for WEIGHTED in 0
     # do
         # ET_PATH=$SAVE_PATH"et_top"$REPK"_w"$WEIGHTED".edge"
 
-        # for EXPK in 10 
+        # for EXPK in 10 5
         # do
             # TT_PATH=$SAVE_PATH"tt_top"$REPK"x"$EXPK"_w"$WEIGHTED".edge"
             # ICE_FULL_PATH=$SAVE_PATH"ice_full_top"$REPK"x"$EXPK"_w"$WEIGHTED".edge"
@@ -93,7 +93,7 @@
     # mkdir $CUR_DIR
     # for SAMP in 2 4 8 16 32 64 128 256 512 1024 1500 2000 2500 3000 3500 4000 4500 5000
     # do
-        # ./ICE/ICE/ice -text data/ice_full_top20x10_w0.edge -textrep ${CUR_DIR}full.embd.${SAMP} -textcontext ${CUR_DIR}context.embd.${SAMP} -dim 300 -sample $SAMP -neg 5 -alpha 0.025 -thread 26 
+        # ./ICE/ICE/ice -text data/ice_full_top20x10_w0.edge -textrep ${cur_dir}full.embd.${SAMP} -textcontext ${CUR_DIR}context.embd.${SAMP} -dim 300 -sample $SAMP -neg 5 -alpha 0.025 -thread 26 
     # done
     # python3 metric/retrieval_folder.py -dir $CUR_DIR -text word.embd -entity item.embd -split full.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/sample_sensi_log_20x10_5k_sep_${i}.txt 
 # done
@@ -122,7 +122,7 @@
     # do
         # LINE/linux/line -train data/et_top20_w0_bidir.edge -output ${CUR_DIR}_full.embd.${SAMP} -size 300 -samples $SAMP -negative 5 -rho 0.025 -threads 26
         # sed 1,1d ${CUR_DIR}_full.embd.${SAMP} > ${CUR_DIR}full.embd.${SAMP} # delete the header
-        # python3 metric/retrieval_folder.py -dir $CUR_DIR -text word.embd -entity item.embd -split full.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/bpt_log_20x10_2k_${i}.txt 
+        # python3 metric/retrieval_folder.py -dir $CUR_DIR -text word.embd -entity item.embd -split full.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/bpt20_log_2k_${i}.txt 
     # done
 # done
 
@@ -135,6 +135,46 @@
 # # baseline3: KBR
 
 
+###############################################################
+# Train for classification (other settings) 
+###############################################################
+# # baseline: BPT
+# task=task/classification
+# mkdir $task
+# topk=10
+# method=$task/BPT${topk}
+# mkdir $method
+# if [ -f "data/et_top${topk}_w0_bidir.edge" ]
+# then
+    # echo "find the file."
+# else
+    # echo "generating bi-directional graph"
+    # awk '{print $2 " " $1 " " $3}' data/et_top${topk}_w0.edge | cat - data/et_top${topk}_w0.edge | sort | uniq > data/et_top${topk}_w0_bidir.edge
+# fi
+# for i in 1
+# do
+    # for SAMP in 2000 
+    # do
+        # LINE/linux/line -train data/et_top${topk}_w0_bidir.edge -output ${method}/_full.embd.${SAMP} -size 300 -samples $SAMP -negative 5 -rho 0.025 -threads 26
+        # sed 1,1d ${method}/_full.embd.${SAMP} > ${method}/full.embd.${SAMP} # delete the header
+        # python3 metric/retrieval_folder.py -dir ${method}/ -text word.embd -entity item.embd -split full.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/bpt${topk}_log_2k_${i}.txt 
+    # done
+# done
 
 
-
+# # other ICEs
+task=task/classification
+mkdir $task
+for topk in 20x5 10x10 10x5 
+do
+    method=$task/ICE${topk}
+    mkdir $method
+    for i in 1
+    do
+        for SAMP in 2000 
+        do
+            ./ICE/ICE/ice -text data/ice_full_top${topk}_w0.edge -textrep ${method}/full.embd.${SAMP} -textcontext ${method}/context.embd.${SAMP} -dim 300 -sample $SAMP -neg 5 -alpha 0.025 -thread 26 
+            python3 metric/retrieval_folder.py -dir ${method}/ -text word.embd -entity item.embd -split full.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/ice${topk}_log_2k_${i}.txt 
+        done
+    done
+done
