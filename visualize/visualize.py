@@ -98,7 +98,7 @@ def draw_log(log):
 
 
 if __name__ == "__main__":
-    log = read_log(["sample_sensi_log_20x10_5k_sep_%s.txt"%num for num in range(1,4)], 5000, ["Average"])
+    log = read_log(["sample_sensi_log_20x10_5k_twostage_%s.txt"%num for num in range(1,4)], 5000, ["Average"])
     draw_log_stat(log)
 
 

@@ -53,7 +53,7 @@
 # SAVE_PATH="data/"
 # for REPK in 20 10
 # do
-    # for WEIGHTED in 0
+    # for WEIGHTED in 1
     # do
         # ET_PATH=$SAVE_PATH"et_top"$REPK"_w"$WEIGHTED".edge"
 
@@ -93,7 +93,7 @@
     # mkdir $CUR_DIR
     # for SAMP in 2 4 8 16 32 64 128 256 512 1024 1500 2000 2500 3000 3500 4000 4500 5000
     # do
-        # ./ICE/ICE/ice -text data/ice_full_top20x10_w0.edge -textrep ${cur_dir}full.embd.${SAMP} -textcontext ${CUR_DIR}context.embd.${SAMP} -dim 300 -sample $SAMP -neg 5 -alpha 0.025 -thread 26 
+        # ./ICE/ICE/ice -text data/ice_full_top20x10_w0.edge -textrep ${CUR_DIR}full.embd.${SAMP} -textcontext ${CUR_DIR}context.embd.${SAMP} -dim 300 -sample $SAMP -neg 5 -alpha 0.025 -thread 26 
     # done
     # python3 metric/retrieval_folder.py -dir $CUR_DIR -text word.embd -entity item.embd -split full.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/sample_sensi_log_20x10_5k_sep_${i}.txt 
 # done
@@ -163,18 +163,50 @@
 
 
 # # other ICEs
-task=task/classification
-mkdir $task
-for topk in 20x5 10x10 10x5 
+# task=task/classification
+# mkdir $task
+# for topk in 20x5 10x10 10x5 
+# do
+    # method=$task/ICE${topk}
+    # mkdir $method
+    # for i in 1
+    # do
+        # for SAMP in 2000 
+        # do
+            # ./ICE/ICE/ice -text data/ice_full_top${topk}_w0.edge -textrep ${method}/full.embd.${SAMP} -textcontext ${method}/context.embd.${SAMP} -dim 300 -sample $SAMP -neg 5 -alpha 0.025 -thread 26 
+            # python3 metric/retrieval_folder.py -dir ${method}/ -text word.embd -entity item.embd -split full.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/ice${topk}_log_2k_${i}.txt 
+        # done
+    # done
+# done
+
+
+###############################################################
+# Weighted 2-stage sensitivity
+###############################################################
+# for i in 1 2 3 
+# do
+    # CUR_DIR=sample_sensi/w${i}/
+    # mkdir $CUR_DIR
+    # for SAMP in 2 4 8 16 32 64 128 256 512 1024 1500 2000 2500 3000 3500 4000 4500 5000
+    # do
+        # ./ICE/ICE/ice -text data/ice_tt_top20x10_w1.edge -textrep ${CUR_DIR}word.embd.${SAMP} -textcontext ${CUR_DIR}context.embd.${SAMP} -dim 300 -sample $SAMP -neg 5 -alpha 0.025 -thread 26 -entity data/ice_et_top20x10_w1.edge -save ${CUR_DIR}item.embd.${SAMP}
+    # done
+    # python3 metric/retrieval_folder.py -dir $CUR_DIR -text word.embd -entity item.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/sample_sensi_log_20x10_5k_sep_w${i}.txt 
+# done
+
+
+###############################################################
+# Unweighted 2-stage sensitivity
+###############################################################
+for i in 3 
 do
-    method=$task/ICE${topk}
-    mkdir $method
-    for i in 1
+    CUR_DIR=sample_sensi/twostage${i}/
+    mkdir $CUR_DIR
+    # for SAMP in 2 4 8 16 32 64 128 256 512 1024 1500 2000 2500 3000 3500 4000 4500 5000
+    for SAMP in 2500 3000 3500 4000 4500 5000
     do
-        for SAMP in 2000 
-        do
-            ./ICE/ICE/ice -text data/ice_full_top${topk}_w0.edge -textrep ${method}/full.embd.${SAMP} -textcontext ${method}/context.embd.${SAMP} -dim 300 -sample $SAMP -neg 5 -alpha 0.025 -thread 26 
-            python3 metric/retrieval_folder.py -dir ${method}/ -text word.embd -entity item.embd -split full.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/ice${topk}_log_2k_${i}.txt 
-        done
+        ./ICE/ICE/ice -text data/ice_tt_top20x10_w0.edge -textrep ${CUR_DIR}word.embd.${SAMP} -textcontext ${CUR_DIR}context.embd.${SAMP} -dim 300 -sample $SAMP -neg 5 -alpha 0.025 -thread 26 -entity data/ice_et_top20x10_w0.edge -save ${CUR_DIR}item.embd.${SAMP}
     done
+    python3 metric/retrieval_folder.py -dir $CUR_DIR -text word.embd -entity item.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/sample_sensi_log_20x10_5k_twostage_${i}.txt 
 done
+
