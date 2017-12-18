@@ -57,6 +57,21 @@ def log_stat(logs, stat_func):
     return stat_list
 
 
+def print_stat(log):
+    for topk in ['50', '100']:
+        for genre, logs in log[topk].items():
+            # for func, name in [(np.min, 'min'), (np.max, 'max'), (np.mean, 'mean')]:
+            for func, name in [(np.mean, 'mean')]:
+                stats = log_stat(logs, func)
+                xs = []
+                ys = []
+                for x, y in sorted(stats, key=itemgetter(0)):
+                    xs.append(x)
+                    ys.append(y)
+                for i, j in zip(xs, ys):
+                    print("Genre:%s, Iter:%s, (%s)Precision%s:%.3f"%(genre, i, name, topk, j))
+
+
 def draw_log_stat(log):
     pp = PdfPages('fig.pdf')
     r = 1
@@ -98,7 +113,8 @@ def draw_log(log):
 
 
 if __name__ == "__main__":
-    log = read_log(["sample_sensi_log_20x10_5k_twostage_%s.txt"%num for num in range(1,4)], 5000, ["Average"])
-    draw_log_stat(log)
+    log = read_log(["log/sample_sensi_log_20x5_5k_sep_%s.txt"%num for num in range(1,2)], 3000)
+    # draw_log_stat(log)
+    print_stat(log)
 
 
