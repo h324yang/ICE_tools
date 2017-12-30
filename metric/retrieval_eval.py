@@ -37,7 +37,7 @@ def read_w2v_from_file(path, prefix="", skip_header=False):
     return w2v_dict
 
 
-def get_seeds(seed_dict, genre, topW=20, filter_dict=None):
+def get_seeds(seed_dict, genre, topW, filter_dict=None):
     seeds = []
     quota = topW
     word_dict = seed_dict[genre]
@@ -92,13 +92,13 @@ def genre_precision(genre, id2genres, retrieved):
     return hit / float(x*y)
 
 
-def evaluate(genres, id2genres, seed_dict, word_embd, item_embd):
+def evaluate(genres, id2genres, seed_dict, word_embd, item_embd, topW=20):
     topK = [50, 100]
     for k in topK:
         print("Precision@%s:"%k)
         avg = 0.
         for g in genres:
-            seeds = get_seeds(seed_dict, g, filter_dict=word_embd)
+            seeds = get_seeds(seed_dict, g, topW, filter_dict=word_embd)
             retrieved = batch_retrieve(seeds, word_embd, item_embd, k)
             precision = genre_precision(g, id2genres, retrieved)
             print("%s %.3f"%(g, precision))

@@ -113,7 +113,8 @@ def draw_log(log):
 
 
 if __name__ == "__main__":
-    log = read_log(["log/sample_sensi_log_20x5_5k_sep_%s.txt"%num for num in range(1,2)], 3000)
+    log = read_log(["log/sample_sensi_log_10x5_10k_sep_%s.txt"%num for num in range(1,4)], 5000)
+    # log = read_log(["log/sample_sensi_log_10x5_10k_unw_init1_twostage_w%s.txt"%num for num in range(1,4)], 5000)
     # draw_log_stat(log)
     print_stat(log)
 

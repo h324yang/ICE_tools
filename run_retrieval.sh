@@ -19,58 +19,58 @@
 ###############################################################
 # Generate et/tt graphs
 ###############################################################
-# echo "Start generating ET and TT relation edge lists..."
-# INFO_PATH="OMDB_dataset/omdb_keyword_tfidf.json"
-# EMBD_PATH="pretrain/partial_embd.txt"
-# SAVE_PATH="data/"
-# GEN_LIB="gen_ice_network/UPLOAD_ice_network"
+echo "Start generating ET and TT relation edge lists..."
+INFO_PATH="OMDB_dataset/omdb_keyword_tfidf.json"
+EMBD_PATH="pretrain/partial_embd.txt"
+SAVE_PATH="data/"
+GEN_LIB="gen_ice_network/UPLOAD_ice_network"
 
-# for REPK in 20 10
-# do
-    # for WEIGHTED in 0 1
-    # do
-        # for MAX_REPK in 20
-        # do
-            # ET_PATH=$SAVE_PATH"et_top"$REPK"_w"$WEIGHTED".edge"
-            # echo "Generating "$ET_PATH
-            # python3 $GEN_LIB/gen_et.py -info $INFO_PATH -embd $EMBD_PATH -repk $REPK -max_repk $MAX_REPK -et $ET_PATH -w $WEIGHTED
-        # done
+for REPK in 5 10
+do
+    for WEIGHTED in 0 1
+    do
+        for MAX_REPK in 10
+        do
+            ET_PATH=$SAVE_PATH"et_top"$REPK"_w"$WEIGHTED".edge"
+            echo "Generating "$ET_PATH
+            python3 $GEN_LIB/gen_et.py -info $INFO_PATH -embd $EMBD_PATH -repk $REPK -max_repk $MAX_REPK -et $ET_PATH -w $WEIGHTED
+        done
 
-        # for EXPK in 1 3 5 8 10
-        # do
-            # TT_PATH=$SAVE_PATH"tt_top"$REPK"x"$EXPK"_w"$WEIGHTED".edge"
-            # echo "Generating "$TT_PATH
-            # python3 $GEN_LIB/gen_tt.py -embd $EMBD_PATH -et $ET_PATH -expk $EXPK -tt $TT_PATH -w $WEIGHTED
-        # done
-    # done
-# done
-# echo "Finished generating ET and TT relation edge lists."
+        for EXPK in 1 3 5 8 10
+        do
+            TT_PATH=$SAVE_PATH"tt_top"$REPK"x"$EXPK"_w"$WEIGHTED".edge"
+            echo "Generating "$TT_PATH
+            python3 $GEN_LIB/gen_tt.py -embd $EMBD_PATH -et $ET_PATH -expk $EXPK -tt $TT_PATH -w $WEIGHTED
+        done
+    done
+done
+echo "Finished generating ET and TT relation edge lists."
 
 
 ###############################################################
 # Construct ICE network
 ###############################################################
-# SAVE_PATH="data/"
-# for REPK in 20 10
-# do
-    # for WEIGHTED in 0 1
-    # do
-        # ET_PATH=$SAVE_PATH"et_top"$REPK"_w"$WEIGHTED".edge"
+SAVE_PATH="data/"
+for REPK in 5 10
+do
+    for WEIGHTED in 0 1
+    do
+        ET_PATH=$SAVE_PATH"et_top"$REPK"_w"$WEIGHTED".edge"
 
-        # for EXPK in 1 3 5 8 10
-        # do
-            # TT_PATH=$SAVE_PATH"tt_top"$REPK"x"$EXPK"_w"$WEIGHTED".edge"
-            # ICE_FULL_PATH=$SAVE_PATH"ice_full_top"$REPK"x"$EXPK"_w"$WEIGHTED".edge"
-            # ICE_ET_PATH=$SAVE_PATH"ice_et_top"$REPK"x"$EXPK"_w"$WEIGHTED".edge"
-            # ICE_TT_PATH=$SAVE_PATH"ice_tt_top"$REPK"x"$EXPK"_w"$WEIGHTED".edge"
-            # python3 ICE/ICE/construct_graph.py -et $ET_PATH -tt $TT_PATH -ice_full $ICE_FULL_PATH -ice_et $ICE_ET_PATH -ice_tt $ICE_TT_PATH -w $WEIGHTED
-        # done
-    # done
-# done
-# echo "Finished generating ET and TT relation edge lists."
+        for EXPK in 1 3 5 8 10
+        do
+            TT_PATH=$SAVE_PATH"tt_top"$REPK"x"$EXPK"_w"$WEIGHTED".edge"
+            ICE_FULL_PATH=$SAVE_PATH"ice_full_top"$REPK"x"$EXPK"_w"$WEIGHTED".edge"
+            ICE_ET_PATH=$SAVE_PATH"ice_et_top"$REPK"x"$EXPK"_w"$WEIGHTED".edge"
+            ICE_TT_PATH=$SAVE_PATH"ice_tt_top"$REPK"x"$EXPK"_w"$WEIGHTED".edge"
+            python3 ICE/ICE/construct_graph.py -et $ET_PATH -tt $TT_PATH -ice_full $ICE_FULL_PATH -ice_et $ICE_ET_PATH -ice_tt $ICE_TT_PATH -w $WEIGHTED
+        done
+    done
+done
+echo "Finished generating ET and TT relation edge lists."
 
 
-# ###############################################################
+###############################################################
 # Continuous sensitivity analysis
 ###############################################################
 # DIR="sample_sensi/continuous/"
@@ -87,19 +87,38 @@
 ###############################################################
 # Separate sensitivity analysis
 ###############################################################
-# for topk in 10x5 10x10 20x5 # 20x10
+# for topk in 5x5 10x5 # 5x10 10x5 10x10 20x5 20x10
 # do
-    # for i in 1 # 2 3
+    # for i in 1 2 3
     # do
         # CUR_DIR=sample_sensi/${topk}_${i}/
         # mkdir $CUR_DIR
-        # for SAMP in 2 4 8 16 32 64 128 256 512 1024 1500 2000 2500 3000 3500 4000 4500 5000
+        # for SAMP in 10 20 40 80 160 320 640 1000 2000 3000 4000 5000 6000 7000 8000 9000 10000 
         # do
-            # ./ICE/ICE/ice -text data/ice_full_top${topk}_w0.edge -textrep ${CUR_DIR}full.embd.${SAMP} -textcontext ${CUR_DIR}context.embd.${SAMP} -dim 300 -sample $SAMP -neg 5 -alpha 0.025 -thread 26 
+            # ./ICE/ICE/ice -text data/ice_full_top${topk}_w0.edge -textrep ${CUR_DIR}full.embd.${SAMP} -textcontext ${CUR_DIR}context.embd.${SAMP} -dim 300 -sample $SAMP -neg 5 -alpha 0.025 -thread 54 
         # done
-        # python3 metric/retrieval_folder.py -dir $CUR_DIR -text word.embd -entity item.embd -split full.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/sample_sensi_log_${topk}_5k_sep_${i}.txt 
+        # python3 metric/retrieval_folder.py -dir $CUR_DIR -text word.embd -entity item.embd -split full.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/sample_sensi_log_${topk}_10k_sep_${i}.txt 
     # done
 # done
+
+
+# ###############################################################
+# # Separate sensitivity analysis (Weighted)
+# ###############################################################
+# # for topk in 5x5 # 10x5 10x10 20x5 20x10 5x10
+# # do
+    # # for i in 1 # 2 3
+    # # do
+        # # CUR_DIR=sample_sensi/${topk}_w${i}/
+        # # mkdir $CUR_DIR
+        # # for SAMP in 5000 6000 7000 8000 9000 10000 # 2 4 8 16 32 64 128 256 512 1024 1500 2000 2500 3000 3500 4000
+        # # do
+            # # ./ICE/ICE/ice -text data/ice_full_top${topk}_w1.edge -textrep ${CUR_DIR}full.embd.${SAMP} -textcontext ${CUR_DIR}context.embd.${SAMP} -dim 300 -sample $SAMP -neg 5 -alpha 0.025 -thread 50 
+        # # done
+        # # python3 metric/retrieval_folder.py -dir $CUR_DIR -text word.embd -entity item.embd -split full.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/sample_sensi_log_${topk}_10k_sep_w${i}.txt 
+    # # done
+# # done
+
 
 ###############################################################
 # Baselines
@@ -141,11 +160,11 @@
 ###############################################################
 # Weighted 2-stage sensitivity
 ###############################################################
-# for i in 1 2 3 
+# for i in 1 2 3
 # do
     # CUR_DIR=sample_sensi/twostage_w${i}/
     # mkdir $CUR_DIR
-    # for SAMP in 2 4 8 16 32 64 128 256 512 1024 1500 2000 2500 3000 3500 4000 4500 5000
+    # for SAMP in 2 4 8 16 32 64 128 256 512 1024 1500 2000 2500 3000 3500 4000 # 4500 5000
     # do
         # ./ICE/ICE/ice -text data/ice_tt_top20x10_w1.edge -textrep ${CUR_DIR}word.embd.${SAMP} -textcontext ${CUR_DIR}context.embd.${SAMP} -dim 300 -sample $SAMP -neg 5 -alpha 0.025 -thread 26 -entity data/ice_et_top20x10_w1.edge -save ${CUR_DIR}item.embd.${SAMP}
     # done
@@ -171,37 +190,56 @@
 ###############################################################
 # Weighted 2-stage sensitivity with initializing unweighted pretrained model (onestage_init)
 ###############################################################
-# for topk in 10x5 10x10 20x5 # 20x10
+# for topk in 5x5 10x5 # 5x5 5x10 10x5 10x10 20x5 20x10
 # do
-    # for i in 1 # 2 3 
+    # for i in 1 2 3
     # do
         # CUR_DIR=sample_sensi/${topk}_unw_init1_twostage_w${i}/
         # PRE_DIR=sample_sensi/${topk}_${i}/
         # mkdir $CUR_DIR
-        # for SAMP in 128 256 512 1024 1500 2000 2500 3000 # 2 4 8 16 32 64 
+        # for SAMP in 10 20 40 80 160 320 640 1000 2000 3000 4000 5000 6000 7000 8000 9000 10000
         # do
             # grep ^w_ ${PRE_DIR}context.embd.${SAMP} > ${PRE_DIR}word_context.embd.${SAMP}
-            # ./ICE/ICE/ice -text data/ice_tt_top${topk}_w1.edge -textrep ${CUR_DIR}word.embd.${SAMP} -textcontext ${CUR_DIR}context.embd.${SAMP} -load_embd1 ${PRE_DIR}word_context.embd.${SAMP} -dim 300 -sample $SAMP -neg 5 -alpha 0.025 -thread 50 -entity data/ice_et_top${topk}_w1.edge -save ${CUR_DIR}item.embd.${SAMP}
+            # ./ICE/ICE/ice -text data/ice_tt_top${topk}_w1.edge -textrep ${CUR_DIR}word.embd.${SAMP} -textcontext ${CUR_DIR}context.embd.${SAMP} -load_embd1 ${PRE_DIR}word_context.embd.${SAMP} -dim 300 -sample $SAMP -neg 5 -alpha 0.025 -thread 54 -entity data/ice_et_top${topk}_w1.edge -save ${CUR_DIR}item.embd.${SAMP}
         # done
-        # python3 metric/retrieval_folder.py -dir $CUR_DIR -text word.embd -entity item.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/sample_sensi_log_${topk}_3k_unw_init1_twostage_w${i}.txt 
+        # python3 metric/retrieval_folder.py -dir $CUR_DIR -text word.embd -entity item.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/sample_sensi_log_${topk}_10k_unw_init1_twostage_w${i}.txt 
     # done
 # done
 
 ###############################################################
 # Intermediate Test : e and t' retrieval 
 ###############################################################
-for topk in 10x5 10x10 20x5 # 20x10
-do
-    for i in 1 # 2 3 
-    do
-        CUR_DIR=sample_sensi/${topk}_unw_init1_intermediate_w${i}/
-        mkdir $CUR_DIR
-        cp sample_sensi/${topk}_${i}/item.embd* $CUR_DIR
-        cp sample_sensi/${topk}_unw_init1_twostage_w${i}/word.embd* $CUR_DIR
-        python3 metric/retrieval_folder.py -dir $CUR_DIR -text word.embd -entity item.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/sample_sensi_log_${topk}_5k_unw_init1_intermediate_w${i}.txt
-        rm $CUR_DIR*
-    done
-done
+# for topk in 20x5 # 20x10 10x5 10x10 
+# do
+    # for i in 1 # 2 3 
+    # do
+        # CUR_DIR=sample_sensi/${topk}_unw_init1_intermediate_w${i}/
+        # mkdir $CUR_DIR
+        # cp sample_sensi/${topk}_${i}/item.embd* $CUR_DIR
+        # cp sample_sensi/${topk}_unw_init1_twostage_w${i}/word.embd* $CUR_DIR
+        # python3 metric/retrieval_folder.py -dir $CUR_DIR -text word.embd -entity item.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json >> visualize/log/sample_sensi_log_${topk}_5k_unw_init1_intermediate_w${i}.txt
+        # rm $CUR_DIR*
+    # done
+# done
 
+
+###############################################################
+# Tuning the topW (genre seeds) for retrieval 
+###############################################################
+# for topk in 5x5 10x5 # 5x10 10x10 20x5 20x10
+# do
+    # for topW in 20 40 60
+    # do
+        # for i in 1 2 3
+        # do
+            # CUR_DIR=sample_sensi/${topk}_${i}/
+            # python3 metric/retrieval_folder.py -dir $CUR_DIR -text word.embd -entity item.embd -split full.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json -topW ${topW} >> visualize/log/sample_sensi_log_${topk}_6k_sep_${topW}_${i}.txt 
+            
+            # CUR_DIR=sample_sensi/${topk}_unw_init1_twostage_w${i}/
+            # PRE_DIR=sample_sensi/${topk}_${i}/
+            # python3 metric/retrieval_folder.py -dir $CUR_DIR -text word.embd -entity item.embd -omdb OMDB_dataset/OMDB.json -seeds OMDB_dataset/genre_seeds.json -topW ${topW} >> visualize/log/sample_sensi_log_${topk}_6k_unw_init1_twostage_${topW}_w${i}.txt 
+        # done
+    # done
+# done
 
 

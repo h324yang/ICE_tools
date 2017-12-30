@@ -1,3 +1,5 @@
+moving.sh
+
 pretrain/*
 !pretrain/.keep
 
@@ -21,3 +23,8 @@ backup/*
 
 task/*
 !task/.keep
+
+genre_data/*
+!genre_data/.keep
+
+

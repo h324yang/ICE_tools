@@ -88,8 +88,8 @@ class CaseStudy():
 
 if __name__ == "__main__":
     # item_p, word_p = get_args()
-    item_p = "../sample_sensi/1/item.embd.2000"
-    word_p = "../sample_sensi/1/word.embd.2000"
+    item_p = "../sample_sensi/20x5_unw_init1_intermediate_w1/item.embd.64"
+    word_p = "../sample_sensi/20x5_unw_init1_intermediate_w1/word.embd.64"
     omdb_p = "../OMDB_dataset/OMDB.json"
     cs = CaseStudy(item_p, word_p, omdb_p)
     print("----movie-to-word----")

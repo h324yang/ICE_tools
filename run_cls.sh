@@ -348,11 +348,90 @@
     # done    
 # done
 
-for topk in 20x1 20x3 20x5 20x8 20x10 10x1 10x3 10x5 10x8 10x10
-do
+# for topk in 20x1 20x3 20x5 20x8 20x10 10x1 10x3 10x5 10x8 10x10
+# do
     
-    method=task/classification/wICE${topk}
-    echo ${topk}": Average Scores:" >> visualize/log/cls_sensi_report.txt
-    cat $method/res_* | python3 metric/avg_validation.py >> visualize/log/cls_sensi_report.txt
+    # method=task/classification/wICE${topk}
+    # echo ${topk}": Average Scores:" >> visualize/log/cls_sensi_report.txt
+    # cat $method/res_* | python3 metric/avg_validation.py >> visualize/log/cls_sensi_report.txt
+# done
+
+
+###############################################################
+# classification IMDB
+###############################################################
+task=task/classification
+SAMP=1000
+mkdir $task
+for topk in 5x5
+do
+    CUR_DIR=${task}/wICE${topk}/
+    mkdir $CUR_DIR
+    ./ICE/ICE/ice -text data/ice_full_top${topk}_w0.edge -textrep ${CUR_DIR}full.embd.${SAMP} -textcontext ${CUR_DIR}context.embd.${SAMP} -dim 300 -sample $SAMP -neg 5 -alpha 0.025 -thread 50
+    grep ^m_ ${CUR_DIR}full.embd.${SAMP} > ${CUR_DIR}w0_item.embd.${SAMP}
+done
+
+for topk in 5x5
+do
+    CUR_DIR=${task}/wICE${topk}/
+    grep ^w_ ${CUR_DIR}context.embd.${SAMP} > ${CUR_DIR}word_context.embd.${SAMP}
+    ./ICE/ICE/ice -text data/ice_tt_top${topk}_w1.edge -textrep ${CUR_DIR}word.embd.${SAMP} -textcontext ${CUR_DIR}word_context_post.embd.${SAMP} -load_embd1 ${CUR_DIR}word_context.embd.${SAMP} -dim 300 -sample $SAMP -neg 5 -alpha 0.025 -thread 50 -entity data/ice_et_top${topk}_w1.edge -save ${CUR_DIR}w1_item.embd.${SAMP}
+done
+
+for topk in 5x5
+do
+    for W in 0 1
+    do
+        embd_method=task/classification/wICE${topk}
+        embd=w${W}_item.embd.${SAMP}
+        task=task/classification
+        method=${embd_method}
+        # Preprocessing
+        lines="$(wc -l ${embd_method}/${embd} | cut -d' ' -f1)"
+        echo "${lines} 300" | cat - ${embd_method}/${embd} > ${method}/_${embd}
+        ./LINE/linux/normalize -input ${method}/_${embd} -output ${method}/_normalized_${embd} -binary 0
+        sed 1,1d ${method}/_normalized_${embd} > ${method}/normalized_${embd}
+        rm ${method}/_*
+        python3  preprocess/gen_libsvm_data.py ${method}/normalized_${embd} OMDB_dataset/id2genres.json ${method}/data
+
+        # Training SVM
+        fold=5
+        for i in `seq 1 $fold`;
+        do
+            python2  preprocess/random_select.py $method/train\_$fold\_$i $method/test\_$fold\_$i $method/data $fold
+        done    
+
+        for i in `seq 1 $fold`;
+        do
+            python2 ./libsvm-3.22/trans_class.py $method/train\_$fold\_$i $method/test\_$fold\_$i $method/tmp_train\_$i $method/tmp_class\_$i $method/tmp_test\_$i
+        done
+
+        wait
+
+        for i in `seq 1 $fold`;
+        do
+            ./libsvm-3.22/svm-train -t 0 $method/tmp_train\_$i &
+        done    
+
+        wait
+
+        mv tmp_* $method/ 
+
+        for i in `seq 1 $fold`;
+        do
+            ./libsvm-3.22/svm-predict $method/tmp_test\_$i $method/tmp_train\_$i.model $method/o\_$i &
+        done
+
+        wait
+
+        for i in `seq 1 $fold`;
+        do
+            python2 ./libsvm-3.22/measure.py $method/test\_$fold\_$i $method/o\_$i $method/tmp_class\_$i > $method/res\_$i
+        done
+        
+        report=visualize/log/cls_${topk}_w${W}_report.txt
+        echo ${topk}": Average Scores:" >> ${report}
+        cat $method/res_* | python3 metric/avg_validation.py >> ${report}
+    done
 done
 
