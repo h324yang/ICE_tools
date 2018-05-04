@@ -15,4 +15,4 @@ imdb/task/*
 imdb/log/*
 !imdb/log/.keep
 
-
+imdb/.ipynb_checkpoints/*
