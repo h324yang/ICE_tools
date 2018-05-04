@@ -1,30 +1,18 @@
-moving.sh
+imdb/pretrain/*
+!imdb/pretrain/.keep
 
-pretrain/*
-!pretrain/.keep
+imdb/data/*
+!imdb/data/.keep
 
-data/*
-!data/.keep
-data_*
+imdb/sample_sensi/*
+!imdb/sample_sensi/.keep
 
-reproduce/*
-!reproduce/.keep
+imdb/metric/__pycache__/*
 
-sample_sensi/*
-!sample_sensi/.keep
-sample_sensi_*
+imdb/task/*
+!imdb/task/.keep
 
-metric/__pycache__/*
-
-visualize/log/*
-!visualize/log/.keep
-
-backup/*
-
-task/*
-!task/.keep
-
-genre_data/*
-!genre_data/.keep
+imdb/log/*
+!imdb/log/.keep
 
 

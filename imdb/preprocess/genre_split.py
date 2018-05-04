@@ -24,17 +24,17 @@ def split_network(n_path, id2genre_dict, genre_list):
 
 def main():
     id2genres_p = "../OMDB_dataset/id2genres.json"
-    top5_p = "../data/et_top5_w0.edge"
-    top10_p = "../data/et_top10_w0.edge"
+    top5_p = "../data/et_top5_w1.edge"
+    top10_p = "../data/et_top10_w1.edge"
     SAVE_DIR = "../genre_data"
     genre_list = get_eval_genres()
     id2genres_dict = load_json(id2genres_p)
     top5_res = split_network(top5_p, id2genres_dict, genre_list)
     top10_res = split_network(top10_p, id2genres_dict, genre_list)
     for cur_g in genre_list:
-        with open("%s/%s/%s"%(SAVE_DIR, cur_g, "et_top5_w0.edge"), "w") as f:
+        with open("%s/%s/%s"%(SAVE_DIR, cur_g, "et_top5_w1.edge"), "w") as f:
             f.write(top5_res[cur_g])
-        with open("%s/%s/%s"%(SAVE_DIR, cur_g, "et_top10_w0.edge"), "w") as f:
+        with open("%s/%s/%s"%(SAVE_DIR, cur_g, "et_top10_w1.edge"), "w") as f:
             f.write(top10_res[cur_g])
 
 

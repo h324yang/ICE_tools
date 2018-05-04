@@ -21,8 +21,9 @@ def get_args():
     PARSER.add_argument('-text', default=None, help='Path of word embeddings')
     PARSER.add_argument('-omdb', default=None, help='OMDB dataset')
     PARSER.add_argument('-seeds', default=None, help='Seed words of genres')
+    PARSER.add_argument("-topW", type=int, default=20, help="The number of seed words")
     CONFIG = PARSER.parse_args()
-    return CONFIG.entity, CONFIG.text, CONFIG.omdb, CONFIG.seeds
+    return CONFIG.entity, CONFIG.text, CONFIG.omdb, CONFIG.seeds, CONFIG.topW
 
 
 def read_w2v_from_file(path, prefix="", skip_header=False):
@@ -67,6 +68,7 @@ def gen_indexed_matrix(items, repr_dict):
 
 
 def batch_retrieve(seeds, word_embd, item_embd, topK):
+    # print("number of seeds: %s"%len(seeds))
     word_imat = gen_indexed_matrix(seeds, word_embd)
     item_imat = gen_indexed_matrix(list(item_embd.keys()), item_embd)
     cos_mat = pairwise_distances(word_imat.repr_matrix, item_imat.repr_matrix, metric="cosine")
@@ -107,7 +109,7 @@ def evaluate(genres, id2genres, seed_dict, word_embd, item_embd, topW=20):
 
 
 def main():
-    item_p, word_p, data_p, seed_p = get_args()
+    item_p, word_p, data_p, seed_p, topW = get_args()
     # item_p = "../reproduce/item1.embd"
     # word_p = "../reproduce/word1.embd"
     # data_p = "../OMDB_dataset/OMDB.json"
@@ -117,7 +119,7 @@ def main():
     id2genres = extract_genres(load_json(data_p))
     seed_dict = load_json(seed_p)
     eval_genres = get_eval_genres()
-    evaluate(eval_genres, id2genres, seed_dict, word_embd, item_embd)
+    evaluate(eval_genres, id2genres, seed_dict, word_embd, item_embd, topW)
 
 
 if __name__ == "__main__":

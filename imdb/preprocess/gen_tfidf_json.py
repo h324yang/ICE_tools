@@ -58,7 +58,7 @@ def gen_tfidf_json(dict_data, topM, weighted=True, filter_dict=None, item_prefix
                 word_weight = 1.
 
             has_word = None
-            if filter_dict is None or str(feature_names[value[0][1]]) in filter_dict:
+            if filter_dict is None or word_prefix+str(feature_names[value[0][1]]) in filter_dict:
                 quota -= 1
                 has_word = str(feature_names[value[0][1]])
 
